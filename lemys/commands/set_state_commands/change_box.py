@@ -49,21 +49,37 @@ class ChangeBox(SetStateCommand):
                         if not silent_mode:
                             print('Box changed randomly.')
                     else:
-                        self.State.start = int(args_local[1])
-                        self.State.length = int(args_local[2])
+                        start = int(args_local[1])
+                        length = int(args_local[2])
+                        finish = start + length
 
-                        if self.State.start < 0:
-                            self.State.start = 0
-                        if self.State.finish < 0:
-                            self.State.finish = 0
-                        if self.State.start >= self.State.finish:
-                            self.State.finish = self.State.start + 1  # TODO: remake box changing verification
-                        self.State.finish = self.State.start + self.State.length
-                        if self.State.finish > self.State.cur_data.shape[0]:
-                            self.State.finish = self.State.cur_data.shape[0]
-                            self.State.length = self.State.finish - self.State.start
+                        if length <= 0:
+                            raise ValueError('Length must be a non-zero positive integer')
+
+                        if start < 0:
+                            start = 0
+                            if not silent_mode:
+                                print('Start value is too small. Setting it to {val}'.format(val=start))
+
+                        if finish >= self.State.cur_data.shape[0]:
+                            finish = self.State.cur_data.shape[0]
+                            length = finish - start
+                            if not silent_mode:
+                                print('Finish value is too large. Setting it to {val}'.format(val=finish))
+
+                        if start >= self.State.cur_data.shape[0]:
+                            start = self.State.cur_data.shape[0] - 1
+                            finish = start + 1
+                            length = 1
+                            if not silent_mode:
+                                print('Start value is too large. Setting it to {val}'.format(val=start))
+
+                        self.State.start = start
+                        self.State.length = length
+                        self.State.finish = finish
                         if not silent_mode:
                             print('Box changed.')
+
                     self.State.reset_rate_history(silent_mode=True)
                     self.State.reset_recent_words(silent_mode=True)
                     self.State.reset_word_iter()

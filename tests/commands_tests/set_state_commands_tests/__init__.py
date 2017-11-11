@@ -1,1 +1,2 @@
 from .change_box_tests import TestChangeBox
+from .change_box_tests import TestChangeBoxSmallMainWordBox

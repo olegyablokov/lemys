@@ -37,6 +37,7 @@ class TestChangeBox(unittest.TestCase):
              ['English', 'Russian', 'indistinctly', 'невнятно', '0', '0', '1', '0', '0', '1'],
              ['English', 'Russian', 'contemplate', 'созерцать', '0', '0', '1', '0', '0', '1'],
              ['English', 'Russian', 'chalk', 'мел', '0', '0', '1', '0', '0', '1']])
+
         self.m_State.cur_data = self.m_State.all_data
 
         self.m_State.start = 5
@@ -50,24 +51,28 @@ class TestChangeBox(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_change_start_and_finish_0(self):
-        self.m_ChangeBox.execute(['cb', '-l', '2', '7'], True)
+    def test_change_start_and_finish_correctly(self):
+        self.m_ChangeBox.execute(['cb', '-l', '2', '7'], silent_mode=True)
         self.assertEqual(self.m_State.start, 2)
         self.assertEqual(self.m_State.finish, 9)
         self.assertEqual(self.m_State.length, 7)
         self.assertEqual(self.m_State.words_to_remember, [])
-        self.assertEqual(self.m_State.recent_words, [])
         self.assertEqual(self.m_State.recent_words_cur_size, 0)
+        self.assertEqual(len(self.m_State.recent_words), self.m_State.recent_words_size)
+
+        for word in self.m_State.recent_words:
+            self.assertEqual(word, '')
+
         self.assertLess(self.m_State.recent_words_size, self.m_State.length)
 
         self.assertGreaterEqual(self.m_State.cur_word_iter, 2)
         self.assertLess(self.m_State.cur_word_iter, 9)
 
-    def test_change_start_and_finish_1(self):
+    def test_change_start_and_finish_with_no_integers(self):
         exception_thrown = False
         try:
-            self.m_ChangeBox.execute(['cb', '-l', '2', '2ed'], True)
-        except ValueError as e:
+            self.m_ChangeBox.execute(['cb', '-l', '2', '2ed'], silent_mode=True)
+        except ValueError:
             exception_thrown = True
             self.assertEqual(self.m_State.start, 5)
             self.assertEqual(self.m_State.finish, 15)
@@ -75,17 +80,40 @@ class TestChangeBox(unittest.TestCase):
 
         self.assertTrue(exception_thrown)
 
-    def test_change_start_and_finish_2(self):
-        exception_thrown = False
-        try:
-            self.m_ChangeBox.execute(['cb', '-l', '-1', '3'], True)
-        except ValueError as e:
-            exception_thrown = True
-            self.assertEqual(self.m_State.start, 5)
-            self.assertEqual(self.m_State.finish, 15)
-            self.assertEqual(self.m_State.length, 10)
+    def test_change_start_and_finish_where_finish_too_big(self):
+        self.m_ChangeBox.execute(['cb', '-l', '3', '1000'], silent_mode=True)
 
-        self.assertTrue(exception_thrown)
+        self.assertEqual(self.m_State.start, 3)
+        self.assertEqual(self.m_State.finish, self.m_State.cur_data.shape[0])
+        self.assertEqual(self.m_State.length, self.m_State.finish - self.m_State.start)
+
+
+class TestChangeBoxSmallMainWordBox(unittest.TestCase):
+    def setUp(self):
+        # State:
+        self.m_State = st.State()
+        self.m_State.all_data = np.array(
+            [['English', 'Russian', 'meadow', 'луг', '0', '0', '1', '0', '0', '1']])
+
+        self.m_State.cur_data = self.m_State.all_data
+
+        self.m_State.start = 0
+        self.m_State.finish = 1
+        self.m_State.length = 1
+        self.m_State.cur_word_iter = 0
+
+        # ChangeBox:
+        self.m_ChangeBox = cb.ChangeBox(self.m_State)
+
+    def tearDown(self):
+        pass
+
+    def test_change_start_and_finish_where_finish_too_big(self):
+        self.m_ChangeBox.execute(['cb', '-l', '0', '2'], silent_mode=True)
+
+        self.assertEqual(self.m_State.start, 0)
+        self.assertEqual(self.m_State.finish, self.m_State.cur_data.shape[0])
+        self.assertEqual(self.m_State.length, self.m_State.finish - self.m_State.start)
 
 
 if __name__ == '__main__':

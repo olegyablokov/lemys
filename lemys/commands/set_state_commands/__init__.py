@@ -1,3 +1,5 @@
+import numpy as np
+
 from .add_to_favorites import AddToFavorites
 from .change_box import ChangeBox
 from .flush import Flush
