@@ -1,11 +1,11 @@
 import unittest
 import numpy as np
+import os
 
 import lemys.state as st
-import lemys.commands.set_state_commands.change_box as change_box
 
 
-class TestChangeBox(unittest.TestCase):
+class TestState(unittest.TestCase):
     def setUp(self):
         # State:
         self.m_State = st.State()
@@ -45,75 +45,18 @@ class TestChangeBox(unittest.TestCase):
         self.m_State.length = 10
         self.m_State.cur_word_iter = 8
 
-        # ChangeBox:
-        self.m_ChangeBox = change_box.ChangeBox(self.m_State)
-
     def tearDown(self):
         pass
 
-    def test_change_start_and_finish_correctly(self):
-        self.m_ChangeBox.execute(['cb', '-l', '2', '7'], silent_mode=True)
-        self.assertEqual(self.m_State.start, 2)
-        self.assertEqual(self.m_State.finish, 9)
-        self.assertEqual(self.m_State.length, 7)
-        self.assertEqual(self.m_State.words_to_remember, [])
-        self.assertEqual(self.m_State.recent_words_cur_size, 0)
-        self.assertEqual(len(self.m_State.recent_words), self.m_State.recent_words_size)
+    def test_reset_word_iter(self):
+        for i in range(100):
+            cur_iter = self.m_State.cur_word_iter
 
-        for word in self.m_State.recent_words:
-            self.assertEqual(word, '')
+            self.m_State.reset_word_iter()
+            self.assertEqual(self.m_State.prev_word_iter, cur_iter)
 
-        self.assertLess(self.m_State.recent_words_size, self.m_State.length)
-
-        self.assertGreaterEqual(self.m_State.cur_word_iter, 2)
-        self.assertLess(self.m_State.cur_word_iter, 9)
-
-    def test_change_start_and_finish_with_no_integers(self):
-        exception_thrown = False
-        try:
-            self.m_ChangeBox.execute(['cb', '-l', '2', '2ed'], silent_mode=True)
-        except ValueError:
-            exception_thrown = True
-            self.assertEqual(self.m_State.start, 5)
-            self.assertEqual(self.m_State.finish, 15)
-            self.assertEqual(self.m_State.length, 10)
-
-        self.assertTrue(exception_thrown)
-
-    def test_change_start_and_finish_where_finish_too_big(self):
-        self.m_ChangeBox.execute(['cb', '-l', '3', '1000'], silent_mode=True)
-
-        self.assertEqual(self.m_State.start, 3)
-        self.assertEqual(self.m_State.finish, self.m_State.cur_data.shape[0])
-        self.assertEqual(self.m_State.length, self.m_State.finish - self.m_State.start)
-
-
-class TestChangeBoxSmallMainWordBox(unittest.TestCase):
-    def setUp(self):
-        # State:
-        self.m_State = st.State()
-        self.m_State.all_data = np.array(
-            [['English', 'Russian', 'meadow', 'луг', '0', '0', '1', '0', '0', '1']])
-
-        self.m_State.cur_data = self.m_State.all_data
-
-        self.m_State.start = 0
-        self.m_State.finish = 1
-        self.m_State.length = 1
-        self.m_State.cur_word_iter = 0
-
-        # ChangeBox:
-        self.m_ChangeBox = change_box.ChangeBox(self.m_State)
-
-    def tearDown(self):
-        pass
-
-    def test_change_start_and_finish_where_finish_too_big(self):
-        self.m_ChangeBox.execute(['cb', '-l', '0', '2'], silent_mode=True)
-
-        self.assertEqual(self.m_State.start, 0)
-        self.assertEqual(self.m_State.finish, self.m_State.cur_data.shape[0])
-        self.assertEqual(self.m_State.length, self.m_State.finish - self.m_State.start)
+            self.assertGreaterEqual(self.m_State.cur_word_iter, self.m_State.start)
+            self.assertLess(self.m_State.cur_word_iter, self.m_State.finish)
 
 
 if __name__ == '__main__':

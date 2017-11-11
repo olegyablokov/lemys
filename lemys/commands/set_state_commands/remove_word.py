@@ -14,8 +14,9 @@ class RemoveWord(SetStateCommand):
     @SetStateCommand._execute_wrapper
     def execute(self, args, silent_mode=False):
         if self.State.shuffle_is_on:
-            print('\'{word}\': Word removed from the box.'.format(word=self.State.cur_data[self.State.cur_word_iter]
-                                                                                          [self.State.rev[0]]))
+            if not silent_mode:
+                print('\'{word}\': Word removed from the box.'.format(word=self.State.cur_data[self.State.cur_word_iter]
+                                                                                              [self.State.rev[0]]))
             if self.State.len_is_static:
                 while True:
                     new_word = np.reshape(self.State.cur_data[np.random.randint(0, self.State.cur_data.shape[0])],
@@ -29,7 +30,8 @@ class RemoveWord(SetStateCommand):
                          self.State.cur_data[self.State.cur_word_iter + 1:]))
                 else:
                     self.State.cur_data = np.concatenate((self.State.cur_data[:self.State.cur_word_iter], new_word))
-                print('\'{word}\': Word added to the box.'.format(word=new_word[0][self.State.rev[0]]))
+                if not silent_mode:
+                    print('\'{word}\': Word added to the box.'.format(word=new_word[0][self.State.rev[0]]))
             else:
                 if self.State.cur_word_iter < self.State.cur_data.shape[0]:
                     self.State.cur_data = np.concatenate((self.State.cur_data[:self.State.cur_word_iter],
@@ -39,6 +41,7 @@ class RemoveWord(SetStateCommand):
                 self.State.length -= 1
                 self.State.finish -= 1
         else:
-            print('Removing words is available only when shuffle mode is on.')
+            if not silent_mode:
+                print('Removing words is available only when shuffle mode is on.')
 
         return CommandExecutionCode.NO_ANSWER

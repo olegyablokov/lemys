@@ -29,9 +29,11 @@ class AddToFavorites(SetStateCommand):
         if self.State.favorites.shape[0]:
             if self.State.cur_data_is_favorites or \
                             word_to_add[2] in self.State.favorites[:, 2]:
-                print('\'{word}\': Word already in favorites'.format(word=word_to_add[2]))
+                if not silent_mode:
+                    print('\'{word}\': Word already in favorites'.format(word=word_to_add[2]))
                 return
-        print('\'{word}\': Word added to favorites.'.format(word=word_to_add[2]))
+        if not silent_mode:
+            print('\'{word}\': Word added to favorites.'.format(word=word_to_add[2]))
         with open(self.State.favorites_fn, 'a', encoding='UTF-8-sig') as f:
             pd.DataFrame(word_to_add[:4], dtype='str').T.to_csv(f,
                                                                 header=None,

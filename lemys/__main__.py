@@ -7,7 +7,7 @@ def main():
         _Lemys.read_csv()
 
         _Lemys.run()
-    except Exception as e:
+    except ValueError as e:
         print("Unexpected error:", e)  # sys.exc_info()[0])
         raise
 

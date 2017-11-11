@@ -8,6 +8,7 @@ from command_runner import CommandRunner
 import pandas as pd
 
 from state import State
+# TODO: change dictionary name (it is ambiguous)
 from dictionary import Dictionary
 from dictionary import ResponseDataMap
 

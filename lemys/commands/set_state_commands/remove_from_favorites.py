@@ -9,17 +9,20 @@ class RemoveFromFavorites(SetStateCommand):
         SetStateCommand.__init__(self, _state)
 
     names = ['uf']
-    description = 'Remove the current translation from favorites'
-    argv = {}
+    description = 'Remove a translation from favorites'
+    argv = {'': 'Remove the current translation from favorites'}
+    # '-p': 'Add the previous translation to favorites'}
 
     @SetStateCommand._execute_wrapper
     def execute(self, args, silent_mode=False):
         if not self.State.cur_data[self.State.cur_word_iter][2:3] in self.State.favorites:
-            print('\'{word}\': Word not in favorites'.format(word=self.State.cur_data[self.State.cur_word_iter]
-                                                                                     [self.State.rev[0]]))
+            if not silent_mode:
+                print('\'{word}\': Word not in favorites'.format(word=self.State.cur_data[self.State.cur_word_iter]
+                                                                                         [self.State.rev[0]]))
             return
-        print('\'{word}\': Word removed from favorites.'.format(word=self.State.cur_data[self.State.cur_word_iter]
-                                                                                        [self.State.rev[0]]))
+        if not silent_mode:
+            print('\'{word}\': Word removed from favorites.'.format(word=self.State.cur_data[self.State.cur_word_iter]
+                                                                                            [self.State.rev[0]]))
         for k in range(self.State.favorites.shape[0]):
             if self.State.favorites[k][2] == self.State.cur_data[self.State.cur_word_iter, 2]:
                 self.State.favorites = np.delete(self.State.favorites, k, axis=0)

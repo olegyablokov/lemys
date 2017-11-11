@@ -18,30 +18,39 @@ class ViewBox(GetStateCommand):
     def execute(self, args, silent_mode=False):
         if not args:
             pd.set_option('display.max_rows', self.State.length)
-            print(pd.DataFrame(data=self.State.cur_data[self.State.start:self.State.finish, 2:4]))
+            if not silent_mode:
+                print(pd.DataFrame(data=self.State.cur_data[self.State.start:self.State.finish, 2:4]))
             if not self.State.shuffle_is_on:
-                print('start = {start};\nfinish = {finish}.'.format(start=self.State.start, finish=self.State.finish))
+                if not silent_mode:
+                    print('start = {start};\nfinish = {finish}.'.format(start=self.State.start,
+                                                                        finish=self.State.finish))
         else:
             for args_local in args:
                 if args_local[0] == '-f':
                     pd.set_option('display.max_rows', len(self.State.favorites))
                     if self.State.favorites.shape[0]:
-                        print('Favorites list:\n{list}'.format(list=pd.DataFrame(data=self.State.favorites[:, 2:4])))
+                        if not silent_mode:
+                            print('Favorites list:\n{list}'.format(list=pd.DataFrame(data=self.State.favorites[:, 2:4])))
                     else:
-                        print('Favorites list is empty.')
+                        if not silent_mode:
+                            print('Favorites list is empty.')
                 elif args_local[0] == '-rw':
                     pd.set_option('display.max_rows', self.State.recent_words_cur_size)
                     if self.State.recent_words_cur_size:
-                        print('Recent words box:\n{box}'.format(box=pd.DataFrame(
-                            data=self.State.recent_words[:self.State.recent_words_cur_size])))
+                        if not silent_mode:
+                            print('Recent words box:\n{box}'.format(box=pd.DataFrame(
+                                data=self.State.recent_words[:self.State.recent_words_cur_size])))
                     else:
-                        print('Recent words box is empty.')
+                        if not silent_mode:
+                            print('Recent words box is empty.')
                 elif args_local[0] == '-rem':
                     if self.State.words_to_remember:
                         pd.set_option('display.max_rows', len(self.State.words_to_remember))
-                        print(pd.DataFrame(self.State.words_to_remember))
+                        if not silent_mode:
+                            print(pd.DataFrame(self.State.words_to_remember))
                     else:
-                        print('No words to remember.')
+                        if not silent_mode:
+                            print('No words to remember.')
             pd.reset_option('display.max_rows')
 
         return CommandExecutionCode.NO_ANSWER

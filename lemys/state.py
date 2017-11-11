@@ -42,7 +42,6 @@ class State:
 
         self.random_coef = 0.4
 
-
         self.cur_data = []  # representation: [['Language1', 'Language2', 'Word in language1', 'Word in language2',
         # 'number of correct answers', 'number of answers', 'rate (if zero, word is known)',
         # 'number of correct answers in reverse mode', 'number of answers in reverse mode',

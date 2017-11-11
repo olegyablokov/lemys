@@ -1,2 +1,4 @@
 from .change_box_tests import TestChangeBox
 from .change_box_tests import TestChangeBoxSmallMainWordBox
+from .add_to_favorites_tests import TestAddToFavorites
+from .remove_from_favorites_tests import TestRemoveFromFavorites

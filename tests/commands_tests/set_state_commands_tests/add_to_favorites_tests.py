@@ -1,11 +1,12 @@
 import unittest
 import numpy as np
+import os
 
 import lemys.state as st
-import lemys.commands.set_state_commands.change_box as change_box
+import lemys.commands.set_state_commands.add_to_favorites as add_to_favorites
 
 
-class TestChangeBox(unittest.TestCase):
+class TestAddToFavorites(unittest.TestCase):
     def setUp(self):
         # State:
         self.m_State = st.State()
@@ -45,75 +46,32 @@ class TestChangeBox(unittest.TestCase):
         self.m_State.length = 10
         self.m_State.cur_word_iter = 8
 
-        # ChangeBox:
-        self.m_ChangeBox = change_box.ChangeBox(self.m_State)
-
-    def tearDown(self):
-        pass
-
-    def test_change_start_and_finish_correctly(self):
-        self.m_ChangeBox.execute(['cb', '-l', '2', '7'], silent_mode=True)
-        self.assertEqual(self.m_State.start, 2)
-        self.assertEqual(self.m_State.finish, 9)
-        self.assertEqual(self.m_State.length, 7)
-        self.assertEqual(self.m_State.words_to_remember, [])
-        self.assertEqual(self.m_State.recent_words_cur_size, 0)
-        self.assertEqual(len(self.m_State.recent_words), self.m_State.recent_words_size)
-
-        for word in self.m_State.recent_words:
-            self.assertEqual(word, '')
-
-        self.assertLess(self.m_State.recent_words_size, self.m_State.length)
-
-        self.assertGreaterEqual(self.m_State.cur_word_iter, 2)
-        self.assertLess(self.m_State.cur_word_iter, 9)
-
-    def test_change_start_and_finish_with_no_integers(self):
-        exception_thrown = False
-        try:
-            self.m_ChangeBox.execute(['cb', '-l', '2', '2ed'], silent_mode=True)
-        except ValueError:
-            exception_thrown = True
-            self.assertEqual(self.m_State.start, 5)
-            self.assertEqual(self.m_State.finish, 15)
-            self.assertEqual(self.m_State.length, 10)
-
-        self.assertTrue(exception_thrown)
-
-    def test_change_start_and_finish_where_finish_too_big(self):
-        self.m_ChangeBox.execute(['cb', '-l', '3', '1000'], silent_mode=True)
-
-        self.assertEqual(self.m_State.start, 3)
-        self.assertEqual(self.m_State.finish, self.m_State.cur_data.shape[0])
-        self.assertEqual(self.m_State.length, self.m_State.finish - self.m_State.start)
-
-
-class TestChangeBoxSmallMainWordBox(unittest.TestCase):
-    def setUp(self):
-        # State:
-        self.m_State = st.State()
-        self.m_State.all_data = np.array(
-            [['English', 'Russian', 'meadow', 'луг', '0', '0', '1', '0', '0', '1']])
-
-        self.m_State.cur_data = self.m_State.all_data
-
-        self.m_State.start = 0
-        self.m_State.finish = 1
-        self.m_State.length = 1
-        self.m_State.cur_word_iter = 0
+        # creating favorites file:
+        with open(self.m_State.favorites_fn, 'w') as f:
+            f.write('English, Russian, forlorn, покинутый, 0, 0, 1, 0, 0, 1')
+            f.write('English, Russian, stir, размешивать, 0, 0, 1, 0, 0, 1')
+            f.write('English, Russian, brittle, ломкий, 0, 0, 1, 0, 0, 1')
 
         # ChangeBox:
-        self.m_ChangeBox = change_box.ChangeBox(self.m_State)
+        self.m_AddToFavorites = add_to_favorites.AddToFavorites(self.m_State)
 
     def tearDown(self):
-        pass
+        # deleting favorites file:
+        os.remove(self.m_State.favorites_fn)
 
-    def test_change_start_and_finish_where_finish_too_big(self):
-        self.m_ChangeBox.execute(['cb', '-l', '0', '2'], silent_mode=True)
+    def test_add_non_favorite_translation_to_favorites(self):
+        cur_translation = self.m_State.cur_data[self.m_State.cur_word_iter]
+        self.m_AddToFavorites.execute(['f'], silent_mode=True)
 
-        self.assertEqual(self.m_State.start, 0)
-        self.assertEqual(self.m_State.finish, self.m_State.cur_data.shape[0])
-        self.assertEqual(self.m_State.length, self.m_State.finish - self.m_State.start)
+        self.assertTrue(cur_translation in self.m_State.favorites)
+
+    def test_add_favorite_translation_to_favorites(self):
+        cur_translation = self.m_State.cur_data[self.m_State.cur_word_iter].tolist()
+        self.m_AddToFavorites.execute(['f'], silent_mode=True)
+        self.m_AddToFavorites.execute(['f'], silent_mode=True)
+
+        # asserting that the current translation didn't enter the favorites box twice
+        self.assertEqual(self.m_State.favorites.tolist().count(cur_translation), 1)
 
 
 if __name__ == '__main__':
