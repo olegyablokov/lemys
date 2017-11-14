@@ -32,6 +32,6 @@ class GetFullDefinition(GetStateCommand):
                         raise ValueError('No previous word defined')
         if request_word:
             print('Full definition(s) for \'{word}\':\n'
-                  '{definition}'.format(word=request_word, definition=Command.Dictionary.get_info(request_word)))
+                  '{definition}'.format(word=request_word, definition=self.Dictionary.get_info(request_word)))
 
         return CommandExecutionCode.NO_ANSWER

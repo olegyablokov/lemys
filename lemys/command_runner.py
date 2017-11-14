@@ -46,4 +46,4 @@ class CommandRunner:
                 else:
                     print('Error: no such command.')
             except ValueError as e:
-                print(e)
+                print('Error: {error}.'.format(error=e))

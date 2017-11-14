@@ -66,12 +66,14 @@ class Command(ABC):
 
         _state.cur_data = _state.all_data
 
-        print(('Size of initial dictionary: {init_dict_size};\n' +
-              'Size of chosen dictionary (word box): {word_box_size};\n').format(init_dict_size=_state.cur_data.shape[0],
-                                                                                word_box_size=_state.length))
-        print('You are learning now the words from {start} to {finish}.'.format(start=str(_state.start),
-                                                                                finish=str(_state.finish)))
-        print('Type \'help\' for help.\n')
+        print(('\nSize of the initial dictionary: {init_dict_size};\n'
+               'Size of the chosen dictionary (word box): {word_box_size};\n'
+               'You are learning now the words from {start} to {finish}.\n\n'
+               'Type \'help\' for help.\n').format(
+            init_dict_size=_state.cur_data.shape[0],
+            word_box_size=_state.length,
+            start=str(_state.start),
+            finish=str(_state.finish)))
 
         _state.reset_word_iter()
         Command._update_data(_state)
@@ -209,14 +211,15 @@ class GiveAnswerCommand(Command):
                     pass
 
             # updating self.State.recent_words
-            self.State.recent_words = np.roll(self.State.recent_words, 1)
-            self.State.recent_words[0] = self.State.cur_data[self.State.cur_word_iter][self.State.rev[0]]
-            self.State.recent_words_cur_size += 1
-            if self.State.recent_words_cur_size == self.State.recent_words_size and \
-               self.State.recent_words_size == self.State.length:
-                self.State.reset_recent_words()
-                if not silent_mode:
-                    print('All the words from the box have been encountered. Recent words box flushed.')
+            if self.State.recent_words_size:
+                self.State.recent_words = np.roll(self.State.recent_words, 1)
+                self.State.recent_words[0] = self.State.cur_data[self.State.cur_word_iter][self.State.rev[0]]
+                self.State.recent_words_cur_size += 1
+                if self.State.recent_words_cur_size == self.State.recent_words_size and \
+                   self.State.recent_words_size == self.State.length:
+                    self.State.reset_recent_words()
+                    if not silent_mode:
+                        print('All the words from the box have been encountered. Recent words box flushed.')
 
             self.State.reset_word_iter()
             Command._update_data(self.State, silent_mode)

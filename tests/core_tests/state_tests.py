@@ -40,6 +40,11 @@ class TestState(unittest.TestCase):
 
         self.m_State.cur_data = self.m_State.all_data
 
+        self.m_State.recent_words_size = 5
+        self.m_State.recent_words_cur_size = 3
+        self.m_State.recent_words = np.asarray(['предотвращать', 'stamp', 'indecipherable', '', ''],
+                                               dtype=self.m_State.all_data.dtype)
+
         self.m_State.start = 5
         self.m_State.finish = 15
         self.m_State.length = 10
@@ -49,7 +54,7 @@ class TestState(unittest.TestCase):
         pass
 
     def test_reset_word_iter(self):
-        for i in range(100):
+        for i in range(10):
             cur_iter = self.m_State.cur_word_iter
 
             self.m_State.reset_word_iter()
@@ -57,6 +62,21 @@ class TestState(unittest.TestCase):
 
             self.assertGreaterEqual(self.m_State.cur_word_iter, self.m_State.start)
             self.assertLess(self.m_State.cur_word_iter, self.m_State.finish)
+
+    def test_reset_recent_words_correctly(self):
+        self.m_State.reset_recent_words(2, silent_mode=True)
+        self.assertEqual(self.m_State.recent_words_size, 2)
+        self.assertEqual(self.m_State.recent_words_cur_size, 2)
+        self.assertTrue((self.m_State.recent_words == np.asarray(['предотвращать', 'stamp'],
+                                                                 dtype=self.m_State.all_data.dtype)).all())
+
+    def test_reset_recent_words_with_arg_more_than_length_of_chosen_word(self):
+        self.m_State.reset_recent_words(100, silent_mode=True)
+        self.assertEqual(self.m_State.recent_words_size, self.m_State.length)
+        self.assertEqual(self.m_State.recent_words_cur_size, 3)
+        self.assertTrue((self.m_State.recent_words == np.asarray(['предотвращать', 'stamp', 'indecipherable', '', '',
+                                                                  '', '', '', '', ''],
+                                                                 dtype=self.m_State.all_data.dtype)).all())
 
 
 if __name__ == '__main__':

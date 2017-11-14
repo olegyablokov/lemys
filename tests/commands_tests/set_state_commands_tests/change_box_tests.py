@@ -36,7 +36,7 @@ class TestChangeBox(unittest.TestCase):
              ['English', 'Russian', 'impregnable', 'неприступный', '0', '0', '1', '0', '0', '1'],
              ['English', 'Russian', 'indistinctly', 'невнятно', '0', '0', '1', '0', '0', '1'],
              ['English', 'Russian', 'contemplate', 'созерцать', '0', '0', '1', '0', '0', '1'],
-             ['English', 'Russian', 'chalk', 'мел', '0', '0', '1', '0', '0', '1']])
+             ['English', 'Russian', 'chalk', 'мел', '0', '0', '1', '0', '0', '1']])  # len(all_data) == 27
 
         self.m_State.cur_data = self.m_State.all_data
 
@@ -44,6 +44,11 @@ class TestChangeBox(unittest.TestCase):
         self.m_State.finish = 15
         self.m_State.length = 10
         self.m_State.cur_word_iter = 8
+
+        self.m_State.recent_words_size = 5
+        self.m_State.recent_words_cur_size = 3
+        self.m_State.recent_words = np.asarray(['предотвращать', 'stamp', 'indecipherable', '', ''],
+                                               dtype=self.m_State.all_data.dtype)
 
         # ChangeBox:
         self.m_ChangeBox = change_box.ChangeBox(self.m_State)

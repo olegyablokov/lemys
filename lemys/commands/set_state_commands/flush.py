@@ -29,6 +29,7 @@ class Flush(SetStateCommand):
                         self.State.rev_finish, self.State.finish = self.State.finish, self.State.rev_finish
                         self.State.length = self.State.finish - self.State.start
                         self.State.reset_recent_words()
+
                     # deleting all data from favorites file
                     with open(self.State.favorites_fn, 'w') as f:
                         f.seek(0)

@@ -47,10 +47,9 @@ class TestRemoveFromFavorites(unittest.TestCase):
         self.m_State.cur_word_iter = 8
 
         # creating favorites file:
-        with open(self.m_State.favorites_fn, 'w') as f:
-            f.write('English, Russian, meadow, луг, 0, 0, 1, 0, 0, 1')
-            f.write('English, Russian, stir, размешивать, 0, 0, 1, 0, 0, 1')
-            f.write('English, Russian, brittle, ломкий, 0, 0, 1, 0, 0, 1')
+        with open(self.m_State.favorites_fn, 'wb') as f:
+            f.write(u'English, Russian, stir, размешивать, 0, 0, 1, 0, 0, 1'.encode('UTF-8-sig'))
+            f.write(u'English, Russian, brittle, ломкий, 0, 0, 1, 0, 0, 1'.encode('UTF-8-sig'))
 
         # ChangeBox:
         self.m_RemoveFromFavorites = remove_from_favorites.RemoveFromFavorites(self.m_State)

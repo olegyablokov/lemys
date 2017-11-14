@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 import os
+import codecs
 
 import lemys.state as st
 import lemys.commands.set_state_commands.add_to_favorites as add_to_favorites
@@ -47,10 +48,10 @@ class TestAddToFavorites(unittest.TestCase):
         self.m_State.cur_word_iter = 8
 
         # creating favorites file:
-        with open(self.m_State.favorites_fn, 'w') as f:
-            f.write('English, Russian, forlorn, покинутый, 0, 0, 1, 0, 0, 1')
-            f.write('English, Russian, stir, размешивать, 0, 0, 1, 0, 0, 1')
-            f.write('English, Russian, brittle, ломкий, 0, 0, 1, 0, 0, 1')
+        with open(self.m_State.favorites_fn, 'wb') as f:
+            f.write('English, Russian, forlorn, покинутый, 0, 0, 1, 0, 0, 1'.encode('UTF-8-sig'))
+            f.write('English, Russian, stir, размешивать, 0, 0, 1, 0, 0, 1'.encode('UTF-8-sig'))
+            f.write('English, Russian, brittle, ломкий, 0, 0, 1, 0, 0, 1'.encode('UTF-8-sig'))
 
         # ChangeBox:
         self.m_AddToFavorites = add_to_favorites.AddToFavorites(self.m_State)

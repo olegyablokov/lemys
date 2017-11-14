@@ -47,26 +47,41 @@ class State:
         # 'number of correct answers in reverse mode', 'number of answers in reverse mode',
         # 'rate in reverse mode (if zero, word is known)']]
 
-        self.reverse = False  # if true, translate russian words into english
+        self.reverse = False  # if true, translate Russian words into English
         self.rev = [3, 2] if self.reverse else [2, 3]
         self.shift = 3 if self.reverse else 0
         self.shuffle_is_on = False
         self.cur_data_is_favorites = False
         self.len_is_static = True
 
-    def reset_recent_words(self, new_recent_words_size=0, silent_mode=False):
-        if new_recent_words_size:
-            if not new_recent_words_size <= self.length or not self.recent_words_size >= 1:
-                self.recent_words_size = max(int(self.length / 4), 1)
-                if not silent_mode:
-                    print('Error: inappropriate size of recent words box. Setting it to {new_size}.'.format(
-                        new_size=self.recent_words_size))
-            else:
-                self.recent_words_size = new_recent_words_size
-        else:
-            self.recent_words_size = max(int(self.length / 4), 1)
+    def flush_recent_words(self, silent_mode=False):
+        self.recent_words = np.full(self.recent_words.shape[0], '', dtype=self.all_data.dtype)
         self.recent_words_cur_size = 0
-        self.recent_words = np.full(self.recent_words_size, '', dtype=self.all_data.dtype)
+        if not silent_mode:
+            print('Recent words box is flushed.')
+
+    def reset_recent_words(self, new_recent_words_size=-1, silent_mode=False):
+        if new_recent_words_size != -1:
+            if new_recent_words_size > self.length:
+                new_recent_words_size = self.length
+                if not silent_mode:
+                    print('Error: new size is too large. Setting it to {new_size}.'.format(
+                        new_size=new_recent_words_size))
+            elif self.recent_words_size < 0:
+                new_recent_words_size = 0
+                if not silent_mode:
+                    print('Error: new size is too small. Setting it to {new_size}.'.format(
+                        new_size=new_recent_words_size))
+        else:
+            new_recent_words_size = int(self.length / 4)
+
+        if new_recent_words_size < self.recent_words_size:
+            self.recent_words = self.recent_words[:new_recent_words_size]
+        else:
+            self.recent_words = np.append(self.recent_words, np.full(new_recent_words_size - self.recent_words_size, '',
+                                                                     dtype=self.all_data.dtype))
+        self.recent_words_cur_size = min(self.recent_words_cur_size, new_recent_words_size)
+        self.recent_words_size = self.recent_words.shape[0]
 
     def reset_rate_history(self, silent_mode=False):
         self.right_ans_counter[1 if self.reverse else 0] = 0
