@@ -1,0 +1,12 @@
+	BUGS:
+fix 'help -' command bug;
+sometimes (?) 'f -p' doesn't work (throws error: no previous word defined);
+fix a misspelling in -remc (help -cb) subcommand description;
+recent words box sometimes not working (goes into infinite cycle);
+
+	NEW FEATURES:
+add '-p' parameter to '-' command;
+add '-n' parameter to 'f' and 'uf' commands (to refer the corresponding word by its index);
+change '-' command name (it is rather clumsy);
+add memento support (e.g. restoring with a state.json document after a failure);
+add support for bug reports (maybe send them to Github's Issues?);
