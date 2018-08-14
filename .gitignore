@@ -1,0 +1,7 @@
+*.json
+*.csv
+*__pycache__*
+.idea/
+build/
+dist/
+lemys.egg-info/
