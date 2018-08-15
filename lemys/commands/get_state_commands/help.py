@@ -1,6 +1,6 @@
 from ..base_commands import GetStateCommand
 from ..base_commands import CommandExecutionCode
-import commands
+from lemys import commands
 
 
 class Help(GetStateCommand):
