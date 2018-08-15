@@ -1,1 +1,1 @@
-from commands_tests import set_state_commands_tests
+from . import set_state_commands_tests, give_answer_commands_tests, get_state_commands_tests
