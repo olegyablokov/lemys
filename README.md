@@ -1,7 +1,7 @@
 ## Getting started
 This is a console program for learning words (e.g. in English). 
 
-[![Build Status](https://travis-ci.org/oyyablokov/lemys.svg?branch=master)](https://travis-ci.org/oyyablokov/lemys)
+[![Build Status](https://travis-ci.org/oyyablokov/lemys.svg?branch=develop)](https://travis-ci.org/oyyablokov/lemys)
 
 ## Features
 - Support for favorite words lists;
