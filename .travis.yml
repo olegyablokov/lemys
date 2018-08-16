@@ -5,7 +5,4 @@ install:
     - pip install -r requirements.txt
 script:
     - python tests
-branches:
-    only:
-        - develop
-        - configure_travis
+
